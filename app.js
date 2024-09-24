@@ -14,23 +14,22 @@ const server = app.listen(port, () =>
 );
 
 app.post("/upload", async (req, res) => {
-  if (req.body.postID) {
-    try {
-      const up = await muxInstance.video.uploads.create({
-        new_asset_settings: {
-          passthrough: req.body.postID,
-          playback_policy: ["public"],
-          encoding_tier: "baseline",
-        },
-      });
-      console.log(up);
-      res.json(up);
-    } catch (error) {
-      console.error("Error creating upload:", error);
-      res.status(500).json({ error: error.message });
-    }
-  } else {
-    res.status(400).json({ error: "postID is required" });
+  if (!req.body || typeof req.body.postID === "undefined") {
+    return res.status(400).json({ error: "postID is required" });
+  }
+  try {
+    const up = await muxInstance.video.uploads.create({
+      new_asset_settings: {
+        passthrough: req.body.postID,
+        playback_policy: ["public"],
+        encoding_tier: "baseline",
+      },
+    });
+    console.log(up);
+    res.json(up);
+  } catch (error) {
+    console.error("Error creating upload:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
