@@ -1,12 +1,11 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
-const { createClient } = require("@supabase/supabase-js");
+require("dotenv").config();
 
-const supabase = createClient(
-  "https://qqkejnpaphzotjxgzknc.supabase.co",
-  process.env.SUPABASE
-);
+const { createClient } = require("@supabase/supabase-js");
+const key = process.env.SUPABASE;
+const supabase = createClient("https://qqkejnpaphzotjxgzknc.supabase.co", key);
 
 app.get("/", (req, res) => res.type("html").send(html));
 
