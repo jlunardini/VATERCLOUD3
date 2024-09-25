@@ -17,12 +17,9 @@ const server = app.listen(port, () =>
 );
 
 app.post("/upload", async (req, res) => {
-  console.log(req.body);
-  if (!req.body || typeof req.body.postID === "undefined") {
-    return res.status(400).json({ error: "postID is required" });
-  }
+  const mux = new Mux();
+  console.log(req.body.postID);
   try {
-    const mux = new Mux();
     const up = await mux.video.uploads.create({
       new_asset_settings: {
         passthrough: req.body.postID,
@@ -36,6 +33,23 @@ app.post("/upload", async (req, res) => {
     console.error("Error creating upload:", error);
     res.status(500).json({ error: error.message });
   }
+  // if (!req.body || typeof req.body.postID === "undefined") {
+  //   return res.status(400).json({ error: "postID is required" });
+  // }
+  // try {
+  //   const up = await mux.video.uploads.create({
+  //     new_asset_settings: {
+  //       passthrough: req.body.postID,
+  //       playback_policy: ["public"],
+  //       encoding_tier: "baseline",
+  //     },
+  //   });
+  //   console.log(up);
+  //   res.json(up);
+  // } catch (error) {
+  //   console.error("Error creating upload:", error);
+  //   res.status(500).json({ error: error.message });
+  // }
 });
 
 app.post("/webhook", async (req, res) => {
