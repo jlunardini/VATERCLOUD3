@@ -52,7 +52,6 @@ app.post("/webhook", async (req, res) => {
         .single();
       const newRowData = pendingRowData;
       newRowData.post_url = videoID;
-      newRowData.filter((i) => i != id);
       console.log(newRowData);
       const { error } = await supabase.from("posts").insert(newRowData);
       if (error) {
