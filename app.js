@@ -72,10 +72,16 @@ app.post("/webhook", async (req, res) => {
           .delete("*")
           .eq("id", rowID);
         if (workoutData.length > 0) {
-          console.log(workoutData);
           workoutData[0].post_id = newPostRowData.id;
+          console.log(workoutData[0]);
           const { data: workoutPostsData, error: workoutPostsError } =
-            await supabase.from("workouts").upsert(workoutData);
+            await supabase.from("workouts").upsert(workoutData[0]);
+          if (!workoutPostsError) {
+            const { error: deletePendingWorkoutsError } = await supabase
+              .from("workouts")
+              .delete("*")
+              .eq("post_id", rowID);
+          }
         }
       }
       res.sendStatus(200);
