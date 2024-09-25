@@ -44,16 +44,17 @@ app.post("/webhook", async (req, res) => {
       console.log(data);
       const id = data.playback_ids[0].id;
       const rowID = data.passthrough;
-      console.log(data.playback_ids[0].id);
+      const videoID = data.playback_ids[0].id;
       const { data: pendingRowData, error: pendingRowError } = await supabase
         .from("posts_pending")
         .select("*")
-        .eq("id", rowID);
-      console.log(pendingRowData);
-      const { error } = await supabase
-        .from("posts")
-        .update({ post_url: id })
-        .eq("id", rowID);
+        .eq("id", rowID)
+        .single();
+      const newRowData = pendingRowData;
+      newRowData.post_url = videoID;
+      newRowData.filter((i) => i != id);
+      console.log(newRowData);
+      const { error } = await supabase.from("posts").insert(newRowData);
       if (error) {
         console.log(error);
       }
