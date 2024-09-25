@@ -51,7 +51,7 @@ app.post("/webhook", async (req, res) => {
       const { data: workoutData, error: workoutError } = await supabase
         .from("workouts")
         .select("*")
-        .eq("post_id", pendingRowData.workout_id)
+        .eq("post_id", rowID)
         .single();
       const newRowData = pendingRowData;
       newRowData.post_url = videoID;
