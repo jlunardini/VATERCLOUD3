@@ -53,15 +53,15 @@ app.post("/webhook", async (req, res) => {
         .select("*")
         .eq("post_id", rowID)
         .single();
-      const newRowData = pendingRowData;
-      newRowData.post_url = videoID;
-      delete newRowData.id;
-      const { data, error } = await supabase
+      const newRow = pendingRowData;
+      newRow.post_url = videoID;
+      delete newRow.id;
+      const { data: newPostRowData, error: newPostRowError } = await supabase
         .from("posts")
-        .insert(newRowData)
+        .insert(newRow)
         .select()
         .single();
-      if (error || pendingRowError) {
+      if (workoutError || pendingRowError || newPostRowError) {
         console.log(error);
       } else {
         const { error: deletePendingError } = await supabase
@@ -72,7 +72,7 @@ app.post("/webhook", async (req, res) => {
           console.log(deletePendingError);
         }
         if (workoutData) {
-          workoutData.post_id = data.id;
+          workoutData.post_id = newPostRowData.id;
           const { data: workoutPostsData, error: workoutPostsError } =
             await supabase.from("workouts").insert(workoutData);
         }
