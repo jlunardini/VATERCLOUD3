@@ -60,7 +60,7 @@ app.post("/webhook", async (req, res) => {
       return;
     }
     default:
-      console.log("some other mux event! " + eventType);
+      console.log("some other mux event! " + type);
       res.sendStatus(200);
   }
 });
