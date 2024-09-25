@@ -18,7 +18,6 @@ const server = app.listen(port, () =>
 
 app.post("/upload", async (req, res) => {
   const mux = new Mux();
-  console.log(req.body.postID);
   try {
     const up = await mux.video.uploads.create({
       new_asset_settings: {
@@ -27,42 +26,22 @@ app.post("/upload", async (req, res) => {
         encoding_tier: "baseline",
       },
     });
-    console.log(up);
     res.json(up);
   } catch (error) {
     console.error("Error creating upload:", error);
     res.status(500).json({ error: error.message });
   }
-  // if (!req.body || typeof req.body.postID === "undefined") {
-  //   return res.status(400).json({ error: "postID is required" });
-  // }
-  // try {
-  //   const up = await mux.video.uploads.create({
-  //     new_asset_settings: {
-  //       passthrough: req.body.postID,
-  //       playback_policy: ["public"],
-  //       encoding_tier: "baseline",
-  //     },
-  //   });
-  //   console.log(up);
-  //   res.json(up);
-  // } catch (error) {
-  //   console.error("Error creating upload:", error);
-  //   res.status(500).json({ error: error.message });
-  // }
 });
 
 app.post("/webhook", async (req, res) => {
   const { eventType, eventData } = req.body;
-  console.log(eventType);
+  console.log(req.body);
   switch (eventType) {
     case "video.asset.created": {
       res.sendStatus(200);
       return;
     }
     case "video.asset.ready": {
-      console.log("Ready");
-      console.log(eventData.status);
       const id = eventData.playback_ids[0].id;
       const rowID = eventData.passthrough;
       console.log(eventData.playback_ids[0].id);
