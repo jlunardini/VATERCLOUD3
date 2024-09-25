@@ -52,10 +52,19 @@ app.post("/webhook", async (req, res) => {
         .single();
       const newRowData = pendingRowData;
       newRowData.post_url = videoID;
+      delete newRowData.id;
       console.log(newRowData);
       const { error } = await supabase.from("posts").insert(newRowData);
-      if (error) {
+      if (error || pendingRowError) {
         console.log(error);
+      } else {
+        const { error: deletePendingError } = await supabase
+          .from("posts_pending")
+          .delete("*")
+          .eq("id", rowID);
+        if (pendingRowError) {
+          console.log(deletePendingError);
+        }
       }
       res.sendStatus(200);
       return;
