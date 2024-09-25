@@ -51,8 +51,7 @@ app.post("/webhook", async (req, res) => {
       const { data: workoutData, error: workoutError } = await supabase
         .from("workouts")
         .select("*")
-        .eq("post_id", rowID)
-        .single();
+        .eq("post_id", rowID);
       const newRow = pendingRowData;
       newRow.post_url = videoID;
       delete newRow.id;
@@ -74,7 +73,7 @@ app.post("/webhook", async (req, res) => {
           console.log(deletePendingError);
         }
         if (workoutData) {
-          workoutData.post_id = newPostRowData.id;
+          workoutData[0].post_id = newPostRowData.id;
           const { data: workoutPostsData, error: workoutPostsError } =
             await supabase.from("workouts").insert(workoutData);
         }
