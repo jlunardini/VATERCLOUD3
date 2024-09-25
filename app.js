@@ -62,7 +62,9 @@ app.post("/webhook", async (req, res) => {
         .select()
         .single();
       if (workoutError || pendingRowError || newPostRowError) {
-        console.log(error);
+        console.log(workoutError);
+        console.log(pendingRowError);
+        console.log(newPostRowError);
       } else {
         const { error: deletePendingError } = await supabase
           .from("posts_pending")
