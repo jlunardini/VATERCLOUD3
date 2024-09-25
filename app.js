@@ -43,6 +43,7 @@ app.post("/webhook", async (req, res) => {
     case "video.asset.ready": {
       const rowID = data.passthrough;
       const videoID = data.playback_ids[0].id;
+
       const { data: pendingRowData, error: pendingRowError } = await supabase
         .from("posts_pending")
         .select("*")
@@ -52,6 +53,7 @@ app.post("/webhook", async (req, res) => {
         .from("workouts")
         .select("*")
         .eq("post_id", rowID);
+
       const newRow = pendingRowData;
       newRow.post_url = videoID;
       delete newRow.id;
@@ -69,13 +71,11 @@ app.post("/webhook", async (req, res) => {
           .from("posts_pending")
           .delete("*")
           .eq("id", rowID);
-        if (pendingRowError) {
-          console.log(deletePendingError);
-        }
-        if (workoutData) {
+        if (workoutData.length > 0) {
+          console.log(workoutData);
           workoutData[0].post_id = newPostRowData.id;
           const { data: workoutPostsData, error: workoutPostsError } =
-            await supabase.from("workouts").insert(workoutData);
+            await supabase.from("workouts").upsert(workoutData);
         }
       }
       res.sendStatus(200);
