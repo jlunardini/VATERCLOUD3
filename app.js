@@ -6,6 +6,9 @@ require("dotenv").config();
 const { createClient } = require("@supabase/supabase-js");
 const key = process.env.SUPABASE;
 const supabase = createClient("https://qqkejnpaphzotjxgzknc.supabase.co", key);
+const Mux = require("@mux/mux-node");
+
+app.use(express.json());
 
 app.get("/", (req, res) => res.type("html").send(html));
 
@@ -14,11 +17,13 @@ const server = app.listen(port, () =>
 );
 
 app.post("/upload", async (req, res) => {
+  console.log(req.body);
   if (!req.body || typeof req.body.postID === "undefined") {
     return res.status(400).json({ error: "postID is required" });
   }
   try {
-    const up = await muxInstance.video.uploads.create({
+    const mux = new Mux();
+    const up = await mux.video.uploads.create({
       new_asset_settings: {
         passthrough: req.body.postID,
         playback_policy: ["public"],
