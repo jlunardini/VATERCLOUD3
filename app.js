@@ -41,8 +41,6 @@ app.post("/webhook", async (req, res) => {
       return;
     }
     case "video.asset.ready": {
-      console.log(data);
-      const id = data.playback_ids[0].id;
       const rowID = data.passthrough;
       const videoID = data.playback_ids[0].id;
       const { data: pendingRowData, error: pendingRowError } = await supabase
@@ -50,11 +48,19 @@ app.post("/webhook", async (req, res) => {
         .select("*")
         .eq("id", rowID)
         .single();
+      const { data: workoutData, error: workoutError } = await supabase
+        .from("workouts")
+        .select("*")
+        .eq("post_id", pendingRowData.workout_id)
+        .single();
       const newRowData = pendingRowData;
       newRowData.post_url = videoID;
       delete newRowData.id;
-      console.log(newRowData);
-      const { error } = await supabase.from("posts").insert(newRowData);
+      const { data, error } = await supabase
+        .from("posts")
+        .insert(newRowData)
+        .select()
+        .single();
       if (error || pendingRowError) {
         console.log(error);
       } else {
@@ -64,6 +70,11 @@ app.post("/webhook", async (req, res) => {
           .eq("id", rowID);
         if (pendingRowError) {
           console.log(deletePendingError);
+        }
+        if (workoutData) {
+          workoutData.post_id = data.id;
+          const { data: workoutPostsData, error: workoutPostsError } =
+            await supabase.from("workouts").insert(workoutData);
         }
       }
       res.sendStatus(200);
