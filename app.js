@@ -63,11 +63,17 @@ app.post("/webhook", async (req, res) => {
       console.log("Ready");
       console.log(eventData.status);
       const id = eventData.playback_ids[0].id;
+      const rowID = eventData.passthrough;
       console.log(eventData.playback_ids[0].id);
+      const { data: pendingRowData, error: pendingRowError } = await supabase
+        .from("posts_pending")
+        .select("*")
+        .eq("id", rowID);
+      console.log(pendingRowData);
       const { error } = await supabase
         .from("posts")
         .update({ post_url: id })
-        .eq("id", eventData.passthrough);
+        .eq("id", rowID);
       if (error) {
         console.log(error);
       }
