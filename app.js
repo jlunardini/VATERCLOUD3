@@ -35,7 +35,6 @@ app.post("/upload", async (req, res) => {
 
 app.post("/webhook", async (req, res) => {
   const { eventType, eventData } = req.body;
-  console.log(req.body);
   switch (eventType) {
     case "video.asset.created": {
       res.sendStatus(200);
