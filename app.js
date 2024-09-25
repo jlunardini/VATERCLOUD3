@@ -34,16 +34,17 @@ app.post("/upload", async (req, res) => {
 });
 
 app.post("/webhook", async (req, res) => {
-  const { type, eventData } = req.body;
+  const { type, data } = req.body;
   switch (type) {
     case "video.asset.created": {
       res.sendStatus(200);
       return;
     }
     case "video.asset.ready": {
-      const id = eventData.playback_ids[0].id;
-      const rowID = eventData.passthrough;
-      console.log(eventData.playback_ids[0].id);
+      console.log(data);
+      const id = data.playback_ids[0].id;
+      const rowID = data.passthrough;
+      console.log(data.playback_ids[0].id);
       const { data: pendingRowData, error: pendingRowError } = await supabase
         .from("posts_pending")
         .select("*")
